@@ -1,10 +1,8 @@
 pipeline {
     agent any
-
     tools {
-        jdk 'JDK'  // Must match the name in Jenkins
+        jdk 'JDK'  // your existing JDK
     }
-
     stages {
         stage('Checkout') {
             steps {
@@ -14,30 +12,34 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'chmod +x gradlew'
-                sh './gradlew build'  // Use Gradle wrapper
+                script {
+                    def gradleHome = tool 'Gradle7'
+                    sh "${gradleHome}/bin/gradle build"
+                }
             }
         }
 
         stage('Test') {
             steps {
-                sh './gradlew test'
+                script {
+                    def gradleHome = tool 'Gradle7'
+                    sh "${gradleHome}/bin/gradle test"
+                }
             }
         }
 
         stage('Run Application') {
             steps {
-                sh './gradlew run'
+                script {
+                    def gradleHome = tool 'Gradle7'
+                    sh "${gradleHome}/bin/gradle run"
+                }
             }
         }
     }
 
     post {
-        success {
-            echo 'Build and deployment successful!'
-        }
-        failure {
-            echo 'Build failed!'
-        }
+        success { echo 'Build and deployment successful!' }
+        failure { echo 'Build failed!' }
     }
 }
