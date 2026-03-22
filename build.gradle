@@ -27,3 +27,6 @@ jar {
     }
 }
 }
+application {
+    mainClass = 'com.example.App'
+}
