@@ -1,38 +1,48 @@
-pipeline{
-agent any
-  tools{
-   gradle 'Gradle'
-jdk 'JDK'
-  }
-  stages{
+pipeline {
+    agent any  // Use any available agent
 
-    stage('Checkout'){
-      steps{
-        git branch:'main',url:'https://github.com/chinmayiii/simplegradvedio.git'
-      }
+    tools {
+        // Ensure this matches the name configured in Jenkins
+        jdk 'JDK'
     }
-    stage('Build'){
-      steps{
-        sh 'gradle build'
-      }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/chinmayiii/maventogradle.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+
+              //  sh 'chmod +x gradlew'
+                sh './gradlew build'  // Run Maven build
+            }
+        }
+
+       stage('Test') {
+           steps {
+               sh './gradlew test'  // Run unit tests
+           }
+        }
+
+              
+        stage('Run Application') {
+            steps {
+                // Start the JAR application
+                sh './gradlew run'
+            }
+        }
+
+        
     }
-    stage('Test'){
-      steps{
-        sh 'gradle test'
-      }
+
+    post {
+        success {
+            echo 'Build and deployment successful!'
+        }
+        failure {
+            echo 'Build failed!'
+        }
     }
-    stage('Run Application'){
-      steps{
-        sh 'gradle run'
-      }
-    }
-  }
-  post{
-    success{
-      echo 'Build and deployment succesfull'
-    }
-    failure{
-      echo 'Build failed'
-    }
-  }
 }
